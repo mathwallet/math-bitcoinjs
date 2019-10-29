@@ -1,6 +1,6 @@
 # For Math Wallet DAPP Developer
 
-## Using Math Wallet Cosmos JS API
+## Using Math Wallet Bitcoin JS API
 
 
 ```
