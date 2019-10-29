@@ -91,7 +91,7 @@
            bitcoin.requestSignature(transaction).then(signatureResult => {
                 document.getElementById("signDiv").innerHTML = JSON.stringify(signatureResult);
                 // Next step
-                // Boardcast txHex
+                // Broadcast txHex
             }).catch(e => {
                 console.log(e);
             })
