@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript">
+        function login() {
+            if(!window.bitcoin){
+                alert("Please open the mathwallet extension and switch to bitcoin network!");
+                return;
+            }
+            // Request Address & XPUB & YPUB
+            // Response Format
+            /*
+            {
+                "xpub":"xpub6CMH61g5dNm2zf...",
+                "ypub":"ypub6XSEqWxMufcKYb...",
+                "address":"3CPfFaYKT2BW5tFx2wTYQPju4yhDawtg3E"
+            }
+            */
+            bitcoin.getAccount().then(identity => {
+                document.getElementById("loginDiv").innerHTML = JSON.stringify(identity);
+                console.log(identity);
+            }).catch(e => {
+                console.log(e);
+            })
+        }
+        function signTransaction() {
+            // UTXO
+            var unspent_outputs = [{
+                "addr" : "3CPfFaYKT2BW5tFx2wTYQPju4yhDawtg3E",
+                "script" : "a91475610e6ad6bdc835c7f8ffed615d0f18262543c987",
+                "tx_hash" : "47d73c5920afd554884f30fcb2ec7f79f3b2ba7230609fbd36e065dab6fabae0",
+                "tx_output_n" : 0,
+                "value" : 280000,
+                "xpub" :             {
+                    "m" : "ypub6XSEqWxMufcKYbsn6mfVh8SFfQwN91MU24rgHWd4ew32CpAFUzk2vafr1z6MjySDiUetesq2x3AtiDG1muasuADipezEStGYy7pf5DvjeHT",
+                    "path" : "M/0/0"
+                }
+            }
+            ,{
+                "addr" : "3CPfFaYKT2BW5tFx2wTYQPju4yhDawtg3E",
+                "script" : "a91475610e6ad6bdc835c7f8ffed615d0f18262543c987",
+                "tx_hash" : "726f81a39947cb7d858124a8fd60596443a414b4269377960cd6f5bcc5ba70e2",
+                "tx_output_n" : 0,
+                "value" : 100000,
+                "xpub" :             {
+                    "m" : "ypub6XSEqWxMufcKYbsn6mfVh8SFfQwN91MU24rgHWd4ew32CpAFUzk2vafr1z6MjySDiUetesq2x3AtiDG1muasuADipezEStGYy7pf5DvjeHT",
+                    "path" : "M/0/0"
+                }
+            }
+            ];
+            // UTXO Total Amount
+            var inputAmount = 0;
+            for (var i = 0; i < unspent_outputs.length; i++) {
+                inputAmount+=unspent_outputs[i].value;
+            }
+            // GAS Fee
+            var gasFee = 1757;
+
+
+            // To Address & Amount
+            var toAddress = "3LjmFELEazvmKx5BjZ39VNF6Vzjx83n8AG";
+            var toAmount = 300000;
+
+            // Change Address
+            var changeAddress = "34eGRhyHHTvMJFXkH3KtUmaZpMzkbHrd89";
+
+            // Outputs
+            var outputs = [{
+                "addr" : toAddress,
+                "value" : toAmount,
+            },{
+                "addr" : changeAddress,
+                "value" :inputAmount-toAmount-gasFee,
+            }];
+            var transaction = {
+                "unspent_outputs":unspent_outputs,
+                "outputs":outputs
+            }
+            // Reqeust signature
+            // Response Format
+            /*
+            {
+                "txId":"...",
+                "txHex":"..."
+            }
+            */
+           bitcoin.requestSignature(transaction).then(signatureResult => {
+                document.getElementById("signDiv").innerHTML = JSON.stringify(signatureResult);
+                // Next step
+                // Boardcast txHex
+            }).catch(e => {
+                console.log(e);
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <div id="loginDiv"></div></br>
+    <button type="button" onclick="login()">Login</button></br></br>
+    <div id="signDiv"></div></br>
+    <button type="button" onclick="signTransaction()">signTransaction</button>
+</body>
+
+</html>
